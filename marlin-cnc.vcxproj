@@ -75,6 +75,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>U8glib;C:\Program Files (x86)\Arduino\hardware\tools\avr\avr\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -124,6 +125,7 @@
     <ClCompile Include="stopwatch.cpp" />
     <ClCompile Include="temperature.cpp" />
     <ClCompile Include="twibus.cpp" />
+    <ClCompile Include="U8glib\U8glib.cpp" />
     <ClCompile Include="ultralcd.cpp" />
     <ClCompile Include="utility.cpp" />
     <ClCompile Include="vector_3.cpp" />
@@ -276,6 +278,7 @@
     <ClInclude Include="thermistortables.h" />
     <ClInclude Include="twibus.h" />
     <ClInclude Include="types.h" />
+    <ClInclude Include="U8glib\U8glib.h" />
     <ClInclude Include="ultralcd.h" />
     <ClInclude Include="ultralcd_impl_DOGM.h" />
     <ClInclude Include="ultralcd_impl_HD44780.h" />
