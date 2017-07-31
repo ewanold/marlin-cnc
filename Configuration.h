@@ -49,7 +49,7 @@
  *
  * Note: Update also Version.h !
  */
-#define CONFIGURATION_H_VERSION 010101
+#define CONFIGURATION_H_VERSION 010100
 
 //===========================================================================
 //============================= Getting Started =============================
@@ -401,9 +401,9 @@
 #define USE_XMIN_PLUG
 #define USE_YMIN_PLUG
 #define USE_ZMIN_PLUG
-#define USE_XMAX_PLUG
-#define USE_YMAX_PLUG
-#define USE_ZMAX_PLUG
+//#define USE_XMAX_PLUG
+//#define USE_YMAX_PLUG
+//#define USE_ZMAX_PLUG
 
 // coarse Endstop Settings
 #define ENDSTOPPULLUPS // Comment this out (using // at the start of the line) to disable the endstop pullup resistors
@@ -426,7 +426,7 @@
 #define X_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop. 
 #define Y_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop. 
 #define Z_MAX_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop. 
-#define Z_MIN_PROBE_ENDSTOP_INVERTING true // set to true to invert the logic of the endstop.
+#define Z_MIN_PROBE_ENDSTOP_INVERTING false // set to true to invert the logic of the endstop.
 
 //===========================================================================
 //============================= Z Probe Options =============================
@@ -446,7 +446,7 @@
 // For example an inductive probe, or a setup that uses the nozzle to probe.
 // An inductive probe must be deactivated to go below
 // its trigger-point if hardware endstops are active.
-#define FIX_MOUNTED_PROBE
+//#define FIX_MOUNTED_PROBE
 
 // The BLTouch probe emulates a servo probe.
 //#define BLTOUCH
@@ -523,12 +523,11 @@
 // Setting the wrong pin may have unexpected and potentially disastrous consequences.
 // Use with caution and do your homework.
 //
-#define Z_MIN_PROBE_ENDSTOP
-#define Z_MIN_PROBE_COPY_TO_Z_MIN
+//#define Z_MIN_PROBE_ENDSTOP
 
 // Enable Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN to use the Z_MIN_PIN for your Z_MIN_PROBE.
 // The Z_MIN_PIN will then be used for both Z-homing and probing.
-//#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // To use a probe you must enable one of the two options above!
 
@@ -600,7 +599,7 @@
 #define Y_HOME_DIR -1
 #define Z_HOME_DIR -1
 
-#define min_software_endstops false  // If true, axis won't move to coordinates less than HOME_POS. 
+#define min_software_endstops false // If true, axis won't move to coordinates less than HOME_POS. 
 #define max_software_endstops false  // If true, axis won't move to coordinates greater than the defined lengths below. 
 
 // @section machine
@@ -609,9 +608,9 @@
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
-#define X_MAX_POS 705
-#define Y_MAX_POS 975
-#define Z_MAX_POS 120
+#define X_MAX_POS 200
+#define Y_MAX_POS 200
+#define Z_MAX_POS 200
 
 //===========================================================================
 //========================= Filament Runout Sensor ==========================
@@ -740,8 +739,8 @@
 #endif
 
 // Homing speeds (mm/m)
-#define HOMING_FEEDRATE_XY (15*60)
-#define HOMING_FEEDRATE_Z  (6*60)
+#define HOMING_FEEDRATE_XY (50*60)
+#define HOMING_FEEDRATE_Z  (4*60)
 
 //
 // MOVEMENT SETTINGS
@@ -750,17 +749,17 @@
 
 // default settings
 
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {2560, 240, 2560,   200}    // default steps per unit for Ultimaker
-#define DEFAULT_MAX_FEEDRATE          {  15, 180,   10,    25}    // (mm/sec)  900 10800 600
-#define DEFAULT_MAX_ACCELERATION      {   5,  50,     5, 10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {2560,240,2560,200}  // default steps per unit for Ultimaker
+#define DEFAULT_MAX_FEEDRATE          {15, 180, 6, 25}    // (mm/sec) 
+#define DEFAULT_MAX_ACCELERATION      {50,50,20,10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
 #define DEFAULT_ACCELERATION          50    // X, Y, Z and E acceleration in mm/s^2 for printing moves 
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration in mm/s^2 for retracts
 #define DEFAULT_TRAVEL_ACCELERATION   50    // X, Y, Z acceleration in mm/s^2 for travel (non printing) moves
 
 // The speed change that does not require acceleration (i.e. the software might assume it can be done instantaneously)
-#define DEFAULT_XYJERK                2.0    // (mm/sec) 
-#define DEFAULT_ZJERK                 2.0    // (mm/sec)
+#define DEFAULT_XYJERK                4.0    // (mm/sec) 
+#define DEFAULT_ZJERK                 0.4     // (mm/sec)
 #define DEFAULT_EJERK                 5.0    // (mm/sec)
 
 
@@ -1238,9 +1237,6 @@
 //=============================================================================
 
 // @section extras
-
-#define HONOUR_GRBL_COMMENTS      
-#define ALLOW_XYZ_WITHOUT_G
 
 // Increase the FAN PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino
 //#define FAST_PWM_FAN

@@ -1172,9 +1172,6 @@ inline void get_serial_commands() {
     }
     else { // it's not a newline, carriage return or escape char
       if (serial_char == ';') serial_comment_mode = true;
-#ifdef HONOUR_GRBL_COMMENTS      
-      if (serial_char == '(' && serial_count == 0) serial_comment_mode = true;  // grbl style comments
-#endif      
       if (!serial_comment_mode) serial_line_buffer[serial_count++] = serial_char;
     }
 
@@ -6977,8 +6974,6 @@ inline void gcode_T(uint8_t tmp_extruder) {
   #endif
 }
 
-uint16_t last_G = 0; // G0
-
 /**
  * Process a single command and dispatch it to its handler
  * This is called from the main loop()
@@ -7006,7 +7001,7 @@ void process_next_command() {
 
   char *cmd_ptr = current_command;
 
-  // Get the command code, which must be G, M, or T (or XYZ in case of ALLOW_XYZ_WITHOUT_G)
+  // Get the command code, which must be G, M, or T
   char command_code = *cmd_ptr++;
 
   // Skip spaces to get the numeric part
@@ -7015,17 +7010,7 @@ void process_next_command() {
   uint16_t codenum = 0; // define ahead of goto
 
   // Bail early if there's no code
-  bool code_is_good = false;
-  
-#ifdef  ALLOW_XYZ_WITHOUT_G
-  if (  *current_command == 'X' 
-     || *current_command == 'Y' 
-     || *current_command == 'Z') 
-    code_is_good = NUMERIC_SIGNED(current_command[1]);
-  else 
-#endif    
-    code_is_good = NUMERIC(*cmd_ptr);
-  
+  bool code_is_good = NUMERIC(*cmd_ptr);
   if (!code_is_good) goto ExitUnknownCommand;
 
   // Get and skip the code number
@@ -7044,36 +7029,11 @@ void process_next_command() {
 
   // Handle a known G, M, or T
   switch (command_code) {
-  
-#ifdef  ALLOW_XYZ_WITHOUT_G
-    case 'X':
-    case 'Y':
-    case 'Z':
-    current_command_args = current_command; // reset pointer
-    codenum = last_G;
-    switch (codenum) {
-      // G0, G1
-      case 0:
-      case 1:
-        gcode_G0_G1();
-        break;
-
-      // G2, G3
-      #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
-        case 2: // G2  - CW ARC
-        case 3: // G3  - CCW ARC
-          gcode_G2_G3(codenum == 2);
-          break;
-      #endif
-    }
-#endif
-      
     case 'G': switch (codenum) {
 
       // G0, G1
       case 0:
       case 1:
-        last_G = codenum;
         gcode_G0_G1();
         break;
 
@@ -7081,7 +7041,6 @@ void process_next_command() {
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
         case 2: // G2  - CW ARC
         case 3: // G3  - CCW ARC
-          last_G = codenum;
           gcode_G2_G3(codenum == 2);
           break;
       #endif
@@ -8503,10 +8462,6 @@ void idle(
     #endif
   );
 
-  #if ENABLED(USE_WATCHDOG)
-    watchdog_reset();
-  #endif
-  
   thermalManager.manage_heater();
 
   #if ENABLED(PRINTCOUNTER)
