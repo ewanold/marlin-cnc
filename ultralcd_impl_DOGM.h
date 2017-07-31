@@ -349,6 +349,25 @@ FORCE_INLINE void _draw_axis_label(AxisEnum axis, const char *pstr, bool blink) 
   }
 }
 
+static void printEndstop(uint8_t &x, uint8_t y, uint8_t state, uint8_t inv)
+{
+  u8g.setColorIndex(1); 
+
+  if(state ^ inv)
+  { 
+    u8g.drawBox(x * DOG_CHAR_WIDTH, y - 8, 5, 8 + 1);
+    u8g.setColorIndex(0); 
+    x += lcd_print("1  ");
+  }
+  
+  else
+  {
+    x += lcd_print("0  ");
+  }
+
+  u8g.setColorIndex(1); 
+}
+
 static void lcd_implementation_status_screen() {
   u8g.setColorIndex(1); // black on white
 
@@ -450,6 +469,32 @@ static void lcd_implementation_status_screen() {
   u8g.setPrintPos(3, 49);
   lcd_print(LCD_STR_FEEDRATE[0]);
 
+  // Endstops
+  
+  lcd_setFont(FONT_STATUSMENU);
+  u8g.setPrintPos(0, 8);
+  lcd_print("Stops X  Y  Z  Probe ");
+
+  uint8_t x = 0;
+  uint8_t y = 17;
+  u8g.setPrintPos(x, y);
+  x = lcd_print("Min:  ");
+  printEndstop(x, y, READ(X_MIN_PIN), X_MIN_ENDSTOP_INVERTING);
+  printEndstop(x, y, READ(Y_MIN_PIN), Y_MIN_ENDSTOP_INVERTING);
+  printEndstop(x, y, READ(Z_MIN_PIN), Z_MIN_ENDSTOP_INVERTING);
+  printEndstop(x, y, READ(Z_MIN_PROBE_PIN), Z_MIN_PROBE_ENDSTOP_INVERTING);
+  
+  x = 0;
+  y = 26;
+  u8g.setPrintPos(x, y);
+  x = lcd_print("Max:  ");
+  printEndstop(x, y, READ(X_MAX_PIN), X_MAX_ENDSTOP_INVERTING);
+  printEndstop(x, y, READ(Y_MAX_PIN), Y_MAX_ENDSTOP_INVERTING);
+  printEndstop(x, y, READ(Z_MAX_PIN), Z_MAX_ENDSTOP_INVERTING);
+  
+  // 
+
+  u8g.setColorIndex(1); // black on white
   lcd_setFont(FONT_STATUSMENU);
   u8g.setPrintPos(12, 49);
   lcd_print(itostr3(feedrate_percentage));

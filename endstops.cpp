@@ -341,6 +341,12 @@ void Endstops::update() {
 
         #endif // HAS_Z_MIN
 
+#if ENABLED(Z_MIN_PROBE_COPY_TO_Z_MIN)
+        UPDATE_ENDSTOP(Z, MIN_PROBE);
+        if (TEST_ENDSTOP(Z_MIN_PROBE))
+		  COPY_BIT(current_endstop_bits, Z_MIN_PROBE, Z_MIN);
+#endif
+		
         #if HAS_BED_PROBE && ENABLED(Z_MIN_PROBE_ENDSTOP) && DISABLED(Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN)
           if (z_probe_enabled) {
             UPDATE_ENDSTOP(Z, MIN_PROBE);
