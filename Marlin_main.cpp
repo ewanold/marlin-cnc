@@ -88,7 +88,11 @@
   #include "twibus.h"
 #endif
 
-/**
+#ifdef ALLOW_GCODE_VARIABLES
+#include "Vector.h"
+#endif
+
+ /**
  * Look here for descriptions of G-codes:
  *  - http://linuxcnc.org/handbook/gcode/g-code.html
  *  - http://objects.reprap.org/wiki/Mendel_User_Manual:_RepRapGCodes
@@ -127,6 +131,7 @@
  *
  * M0   - Unconditional stop - Wait for user to press a button on the LCD (Only if ULTRA_LCD is enabled)
  * M1   - Same as M0
+ * M2   - End programm (clear variables)
  * M17  - Enable/Power all stepper motors
  * M18  - Disable all stepper motors; same as M84
  * M20  - List SD card
@@ -6977,7 +6982,41 @@ inline void gcode_T(uint8_t tmp_extruder) {
   #endif
 }
 
-uint16_t last_G = 0; // G0
+#ifdef ALLOW_GCODE_VARIABLES
+Vector <float>  hash_variables;
+
+void gcode_variable()
+{
+  seen_pointer = current_command_args;
+  const unsigned varno = code_value_ulong();
+
+  if (code_seen('=')) 
+  {
+    const float varval = code_value_float();
+    for (unsigned i = hash_variables.size(); i <= varno; i++) 
+      hash_variables.push_back(0.0);
+
+    hash_variables[varno] = varval;
+    char buffer[100];
+
+    for (unsigned i = 0; i < hash_variables.size(); i++)
+    {
+      sprintf(buffer, "; #[%d] = ", i);
+      SERIAL_PROTOCOL(buffer);
+      SERIAL_PROTOCOLLN(hash_variables[i]);
+    }
+  }
+}
+
+#endif
+
+void gcode_M2()
+{
+#ifdef ALLOW_GCODE_VARIABLES
+  hash_variables = Vector<float>();
+#endif
+}
+
 
 /**
  * Process a single command and dispatch it to its handler
@@ -7018,12 +7057,20 @@ void process_next_command() {
   bool code_is_good = false;
   
 #ifdef  ALLOW_XYZ_WITHOUT_G
-  if (  *current_command == 'X' 
-     || *current_command == 'Y' 
-     || *current_command == 'Z') 
+  if (   *current_command == 'X' 
+      || *current_command == 'Y' 
+      || *current_command == 'Z'
+      || *current_command == 'F')
     code_is_good = NUMERIC_SIGNED(current_command[1]);
   else 
 #endif    
+#ifdef ALLOW_GCODE_VARIABLES
+    /* else */  if (*current_command == '#')
+    {
+      code_is_good = NUMERIC(*cmd_ptr);
+    }
+  else
+#endif
     code_is_good = NUMERIC(*cmd_ptr);
   
   if (!code_is_good) goto ExitUnknownCommand;
@@ -7049,8 +7096,9 @@ void process_next_command() {
     case 'X':
     case 'Y':
     case 'Z':
-    current_command_args = current_command; // reset pointer
-    codenum = last_G;
+    case 'F':
+      current_command_args = current_command; // reset pointer
+    codenum = 0;
     switch (codenum) {
       // G0, G1
       case 0:
@@ -7068,12 +7116,16 @@ void process_next_command() {
     }
 #endif
       
+    case '#':
+      current_command_args = current_command; // reset pointer
+      gcode_variable();
+      break;
+
     case 'G': switch (codenum) {
 
       // G0, G1
       case 0:
       case 1:
-        last_G = codenum;
         gcode_G0_G1();
         break;
 
@@ -7081,7 +7133,6 @@ void process_next_command() {
       #if ENABLED(ARC_SUPPORT) && DISABLED(SCARA)
         case 2: // G2  - CW ARC
         case 3: // G3  - CCW ARC
-          last_G = codenum;
           gcode_G2_G3(codenum == 2);
           break;
       #endif
@@ -7177,11 +7228,15 @@ void process_next_command() {
           break;
       #endif // ULTIPANEL
 
+      case 2:
+        gcode_M2();
+        break;
+
       case 17:
         gcode_M17();
         break;
 
-      #if ENABLED(SDSUPPORT)
+#if ENABLED(SDSUPPORT)
         case 20: // M20 - list SD card
           gcode_M20(); break;
         case 21: // M21 - init SD card

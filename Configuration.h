@@ -750,9 +750,9 @@
 
 // default settings
 
-#define DEFAULT_AXIS_STEPS_PER_UNIT   {2560, 240, 2560,   200}    // default steps per unit for Ultimaker
-#define DEFAULT_MAX_FEEDRATE          {  15, 180,   10,    25}    // (mm/sec)  900 10800 600
-#define DEFAULT_MAX_ACCELERATION      {   5,  50,     5, 10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
+#define DEFAULT_AXIS_STEPS_PER_UNIT   {2133.33, 240, 2560,   200}    // default steps per unit for Ultimaker
+#define DEFAULT_MAX_FEEDRATE          {  15,    180,   15,    25}    // (mm/sec)  900 10800 600
+#define DEFAULT_MAX_ACCELERATION      {   5,     50,    5, 10000}    // X, Y, Z, E maximum start speed for accelerated moves. E default values are good for Skeinforge 40+, for older versions raise them a lot.
 
 #define DEFAULT_ACCELERATION          50    // X, Y, Z and E acceleration in mm/s^2 for printing moves 
 #define DEFAULT_RETRACT_ACCELERATION  3000    // E acceleration in mm/s^2 for retracts
@@ -974,7 +974,7 @@
 //                 https://github.com/olikraus/U8glib_Arduino
 //
 //#define ULTRA_LCD   // Character based
-//#define DOGLCD      // Full graphics display
+#define DOGLCD      // Full graphics display
 
 //
 // SD CARD
@@ -1241,6 +1241,7 @@
 
 #define HONOUR_GRBL_COMMENTS      
 #define ALLOW_XYZ_WITHOUT_G
+#define ALLOW_GCODE_VARIABLES
 
 // Increase the FAN PWM frequency. Removes the PWM noise but increases heating in the FET/Arduino
 //#define FAST_PWM_FAN
